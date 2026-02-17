@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>重生之我是二狗之前往二七拯救美女</title>
-    <style>
+      <style>
         * {
             margin: 0;
             padding: 0;
@@ -26,6 +26,7 @@
             border-radius: 36px;
             box-shadow: 0 15px 20px rgba(0,0,0,0.7);
             position: relative;
+            max-width: 100%;
         }
         canvas {
             display: block;
@@ -59,7 +60,7 @@
         }
         .mobile-row {
             display: flex;
-            gap: 12px;
+            gap: 20px;
             justify-content: center;
             margin: 8px 0 5px;
             flex-wrap: wrap;
@@ -119,8 +120,8 @@
             border-radius: 50px;
             border: 6px solid #fedb9f;
             box-shadow: 0 20px 30px black;
-            min-width: 320px;
-            max-width: 90%;
+            min-width: 400px;
+            max-width: 70%;
             color: #fef6d2;
             font-weight: bold;
             max-height: 80vh;
@@ -147,6 +148,7 @@
             color: #134d5e;
             font-weight: bold;
             box-shadow: 0 5px 0 #8b6d44;
+            cursor: pointer;
         }
         .menu-panel button:active {
             transform: translateY(3px);
@@ -196,11 +198,13 @@
             flex-direction: column;
             align-items: center;
             gap: 8px;
+            cursor: pointer;
         }
         .level-btn.locked {
             background: #5a5a5a;
             border-color: #888;
             opacity: 0.7;
+            cursor: not-allowed;
         }
         .level-stars {
             font-size: 1.2rem;
@@ -236,13 +240,12 @@
 </head>
 <body>
 <div class="game-wrapper">
-    <canvas id="gameCanvas" width="1200" height="550"></canvas>
+    <canvas id="gameCanvas" width="1600" height="650"></canvas>
     <div class="hud">
         <div class="hud-item">❤️ <span id="hpDisplay">5</span>/<span id="maxHpDisplay">5</span></div>
         <div class="hud-item">👋 <span id="atkDisplay">1</span></div>
         <div class="hud-item">💩 <span id="coinDisplay">0</span></div>
         <div class="hud-item">🍖 <span id="starDisplay">0</span>/<span id="totalStarsDisplay">20</span></div>
-        <div class="hud-item">🗺️ 第 <span id="levelDisplay">1</span> 关</div>
         <div id="messageBox" style="background:#2e2b1a; padding:5px 20px; border-radius:40px;">菜单中</div>
     </div>
     <div class="mobile-row">
@@ -368,7 +371,6 @@
     const coinSpan = document.getElementById('coinDisplay');
     const starSpan = document.getElementById('starDisplay');
     const totalStarsSpan = document.getElementById('totalStarsDisplay');
-    const levelSpan = document.getElementById('levelDisplay');
     const msgBox = document.getElementById('messageBox');
 
     // 菜单元素
@@ -406,9 +408,9 @@
     const restartBtn = document.getElementById('restartBtn');
 
     // 画布尺寸
-    const W = 1200, H = 550;
+    const W = 1600, H = 650;
     canvas.width = W; canvas.height = H;
-    const GROUND_Y = H - 70;
+    const GROUND_Y = H - 80;
 
     // 物理参数 - 优化二段跳手感
     const GRAVITY = 0.45;  // 降低重力，更容易控制
@@ -521,22 +523,22 @@
     storyNextBtn.addEventListener('click', showNextStory);
 
     // 关卡数据
-    const levels = [
+     const levels = [
         { 
             id: 1, 
             name: '初级 高三教学楼', 
-            worldWidth: 15000,
-            goalX: 14500,
+            worldWidth: 18000,  // 增加以适应横屏
+            goalX: 17500,
             stars: 20,
             baseEnemyHp: 2,
             basePlatforms: 'normal',
-            unlocked: true  // 第一关默认解锁
+            unlocked: true
         },
         { 
             id: 2, 
             name: '中级 操场', 
-            worldWidth: 21000,
-            goalX: 20500,
+            worldWidth: 24000,
+            goalX: 23500,
             stars: 25,
             baseEnemyHp: 3,
             basePlatforms: 'advanced',
@@ -545,13 +547,13 @@
         { 
             id: 3, 
             name: '最终 <<四食堂>>(阿力和大灯的所在地)', 
-            worldWidth: 27000,
-            goalX: 26500,
+            worldWidth: 30000,
+            goalX: 29500,
             stars: 30,
             baseEnemyHp: 4,
             basePlatforms: 'expert',
             unlocked: false,
-            hasBoss: true  // 第三关有Boss
+            hasBoss: true
         }
     ];
     
@@ -570,7 +572,7 @@
 
     // 玩家属性
     let player = {
-        x: 150, y: GROUND_Y - 55,
+        x: 200, y: GROUND_Y - 55,
         w: 60, h: 60,
         vx: 0, vy: 0,
         onGround: false,
@@ -623,7 +625,7 @@
             { x: 0, y: GROUND_Y, w: WORLD_WIDTH, h: 70, type: 'normal' }
         ];
 
-        const platformCount = levelId === 1 ? 20 : (levelId === 2 ? 30 : 40);
+        const platformCount = levelId === 1 ? 20 : (levelId === 2 ? 35 : 45);
         for(let i=0; i<platformCount; i++) {
             let x = 400 + i * 600 + Math.random()*300;
             if(x > GOAL_X-500) break;
@@ -745,7 +747,6 @@
         maxHpSpan.innerText = player.maxHp;
         atkSpan.innerText = player.atk;
         coinSpan.innerText = player.coins;
-        levelSpan.innerText = currentLevel;
     }
 
     // 重置当前关卡
@@ -1076,7 +1077,7 @@
     // 绘制
     function draw() {
         ctx.clearRect(0,0,W,H);
-        let targetCam = player.x - 500;
+        let targetCam = player.x - (W / 3);
         targetCam = Math.max(0, Math.min(targetCam, WORLD_WIDTH-W));
         cameraX = targetCam;
         ctx.save(); ctx.translate(-cameraX,0);
